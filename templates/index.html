@@ -1,0 +1,19 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Party Application</title>
+</head>
+<body>
+<h1>Party Application</h1>
+<ul>
+{% for party in parties %}
+<li><a href="/view_party/{{ party.id }}">{{ party.name }}</a></li>
+{% endfor %}
+</ul>
+<a href="/create_party">Create a Party</a>
+</body>
+</html>
+
+
