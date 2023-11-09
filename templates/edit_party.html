@@ -1,0 +1,28 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Edit a Party</title>
+</head>
+<body>
+<h1>Edit a Party</h1>
+<form action="/edit_party/{{ party.id }}" method="post">
+<label for="name">Name:</label>
+<input type="text" name="name" id="name" value="{{ party.name }}">
+<br>
+<label for="date">Date:</label>
+<input type="date" name="date" id="date" value="{{ party.date }}">
+<br>
+<label for="time">Time:</label>
+<input type="time" name="time" id="time" value="{{ party.time }}">
+<br>
+<label for="location">Location:</label>
+<input type="text" name="location" id="location" value="{{ party.location }}">
+<br>
+<input type="submit" value="Edit Party">
+</form>
+</body>
+</html>
+
+
