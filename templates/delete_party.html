@@ -1,0 +1,17 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Delete a Party</title>
+</head>
+<body>
+<h1>Delete a Party</h1>
+<p>Are you sure you want to delete the party "{{ party.name }}"?
+<form action="/delete_party/{{ party.id }}" method="post">
+<input type="submit" value="Delete Party">
+</form>
+</body>
+</html>
+
+
