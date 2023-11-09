@@ -1,0 +1,18 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>View Parties</title>
+</head>
+<body>
+<h1>View Parties</h1>
+<ul>
+{% for party in parties %}
+<li><a href="/view_party/{{ party.id }}">{{ party.name }}</a></li>
+{% endfor %}
+</ul>
+</body>
+</html>
+
+
