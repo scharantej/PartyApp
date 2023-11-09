@@ -1,0 +1,17 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>RSVP to a Party</title>
+</head>
+<body>
+<h1>RSVP to a Party</h1>
+<p>Are you sure you want to RSVP to the party "{{ party.name }}"?
+<form action="/rsvp_party/{{ party.id }}" method="post">
+<input type="submit" value="RSVP">
+</form>
+</body>
+</html>
+
+
