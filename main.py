@@ -1,78 +1,148 @@
  
-# Import the necessary modules
-from flask import Flask, render_template, request, redirect, url_for
-
-# Create a Flask application
-app = Flask(__name__)
-
-# Define the home page route
-@app.route('/')
-def home():
-    # Render the home page template
-    return render_template('home.html')
-
-# Define the route to register a party attendee
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    # If the request method is GET, render the registration form
-    if request.method == 'GET':
-        return render_template('register.html')
-    # If the request method is POST, process the form data
-    else:
-        # Get the form data
-        name = request.form.get('name')
-        email = request.form.get('email')
-
-        # Add the attendee to the database
-        # ...
-
-        # Redirect to the home page
-        return redirect(url_for('home'))
-
-# Define the route to view the list of party attendees
-@app.route('/attendees')
-def attendees():
-    # Get the list of attendees from the database
-    # ...
-
-    # Render the attendees page template
-    return render_template('attendees.html', attendees=attendees)
-
-# Run the application
-if __name__ == '__main__':
-    app.run()
-
-
-main.py
-
-
 from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
+parties = []
+
 @app.route('/')
-def home():
-    return render_template('home.html')
+def index():
+    return render_template('index.html', parties=parties)
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
+@app.route('/create_party', methods=['GET', 'POST'])
+def create_party():
     if request.method == 'GET':
-        return render_template('register.html')
+        return render_template('create_party.html')
     else:
-        name = request.form.get('name')
-        email = request.form.get('email')
+        name = request.form['name']
+        date = request.form['date']
+        time = request.form['time']
+        location = request.form['location']
+        party = {'name': name, 'date': date, 'time': time, 'location': location}
+        parties.append(party)
+        return redirect(url_for('index'))
 
-        # Add the attendee to the database
-        # ...
+@app.route('/edit_party/<int:party_id>', methods=['GET', 'POST'])
+def edit_party(party_id):
+    if request.method == 'GET':
+        party = parties[party_id]
+        return render_template('edit_party.html', party=party)
+    else:
+        name = request.form['name']
+        date = request.form['date']
+        time = request.form['time']
+        location = request.form['location']
+        party = parties[party_id]
+        party['name'] = name
+        party['date'] = date
+        party['time'] = time
+        party['location'] = location
+        return redirect(url_for('index'))
 
-        return redirect(url_for('home'))
+@app.route('/delete_party/<int:party_id>')
+def delete_party(party_id):
+    parties.pop(party_id)
+    return redirect(url_for('index'))
 
-@app.route('/attendees')
-def attendees():
-    # Get the list of attendees from the database
-    # ...
+@app.route('/rsvp_party/<int:party_id>')
+def rsvp_party(party_id):
+    party = parties[party_id]
+    party['rsvps'].append(request.remote_addr)
+    return redirect(url_for('index'))
 
-    return render_template('attendees.html', attendees=attendees)
+@app.route('/view_parties')
+def view_parties():
+    return render_template('view_parties.html', parties=parties)
+
+@app.route('/view_attending_parties')
+def view_attending_parties():
+    attending_parties = [party for party in parties if request.remote_addr in party['rsvps']]
+    return render_template('view_attending_parties.html', parties=attending_parties)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
+
+
+html code
+
+html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Party Application</title>
+</head>
+<body>
+    <h1>Party Application</h1>
+    <ul>
+        {% for party in parties %}
+            <li><a href="/view_party/{{ party.id }}">{{ party.name }}</a></li>
+        {% endfor %}
+    </ul>
+    <a href="/create_party">Create a Party</a>
+</body>
+</html>
+
+
+html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create a Party</title>
+</head>
+<body>
+    <h1>Create a Party</h1>
+    <form action="/create_party" method="post">
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name">
+        <br>
+        <label for="date">Date:</label>
+        <input type="date" name="date" id="date">
+        <br>
+        <label for="time">Time:</label>
+        <input type="time" name="time" id="time">
+        <br>
+        <label for="location">Location:</label>
+        <input type="text" name="location" id="location">
+        <br>
+        <input type="submit" value="Create Party">
+    </form>
+</body>
+</html>
+
+
+html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit a Party</title>
+</head>
+<body>
+    <h1>Edit a Party</h1>
+    <form action="/edit_party/{{ party.id }}" method="post">
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name" value="{{ party.name }}">
+        <br>
+        <label for="date">Date:</label>
+        <input type="date" name="date" id="date" value="{{ party.date }}">
+        <br>
+        <label for="time">Time:</label>
+        <input type="time" name="time" id="time" value="{{ party.time }}">
+        <br>
+        <label for="location">Location:</label>
+        <input type="text" name="location" id="location" value="{{ party.location }}">
+        <br>
+        <input type="submit" value="Edit Party">
+    </form>
+</body>
+</html>
+
+
+html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete a Party</title>
+</head>
+<body>
+    <h1>Delete a Party</h1>
+    <p>Are you sure you want to delete the party "{{ party.name }}"?
